@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Competition Teams Display</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f6f9; color: #333; }
+        .team-card { margin-bottom: 20px; }
+        .card-header { font-size: 1.5em; font-weight: bold; color: #ffffff; background-color: #007bff; text-align: center; }
+        .card { box-shadow: 0 4px 8px rgba(0,0,0,0.2); border: none; }
+        .list-group-item { font-size: 1.1em; }
+        .team-member { padding: 10px 0; }
+        .container { margin-top: 50px; }
+        h1 { color: #007bff; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-center mb-5">🏆 Live Competition Teams 🏆</h1>
+    <div class="row" id="teams-container">
+    </div>
+</div>
+
+<script>
+    async function fetchTeams() {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/teams');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const teams = await response.json();
+            displayTeams(teams);
+        } catch (error) {
+            console.error('Error fetching teams:', error);
+        }
+    }
+
+    // Function to render teams in HTML
+    function displayTeams(teams) {
+        const container = document.getElementById('teams-container');
+        container.innerHTML = ''; // Clear previous teams
+
+        teams.forEach((team, index) => {
+            const teamCard = document.createElement('div');
+            teamCard.className = 'col-md-4 team-card';
+
+            teamCard.innerHTML = `
+                <div class="card shadow-sm">
+                    <div class="card-header">🚀 Team ${index + 1}</div>
+                    <ul class="list-group list-group-flush">
+                        ${team.map(member => `
+                            <li class="list-group-item">
+                                <strong>Skill:</strong> ${member[0] || member.skill} <br>
+                                <strong>Name:</strong> ${member[1] || member.name} <br>
+                                <strong>School:</strong> ${member[2] || member.school}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+            container.appendChild(teamCard);
+        });
+    }
+
+
+    setInterval(fetchTeams, 10000);
+    fetchTeams(); 
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
